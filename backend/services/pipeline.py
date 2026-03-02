@@ -15,7 +15,7 @@ embedder = SentenceTransformer("all-MiniLM-L6-v2")
 def embed_query(text):
     return embedder.encode(text, normalize_embeddings=True).tolist()
 
-def retreive_chunks(query, max_chunks=8, threshold=0.3, professor="Larry Herman", course=None):
+def retreive_chunks(query, professor, course, max_chunks=8, threshold=0.3):
     query_vec = embed_query(query)
 
     params = {
@@ -97,8 +97,10 @@ def answer_query(query, retrieved_chunks):
         'num_predict': 250
     }):
         token = response['message']['content']
-        print(token, end='', flush=True)
+        yield token
+        # print(token, end='', flush=True)
 
+"""
 def pipeline(): 
     query = "Is this professor easy?"
     new_query = rewrite_query(query)
@@ -106,3 +108,4 @@ def pipeline():
     answer_query(query, context)
 
 pipeline()
+"""
