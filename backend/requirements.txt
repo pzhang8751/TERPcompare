@@ -3,6 +3,6 @@ fastapi
 uvicorn
 supabase
 sentence-transformers
-ollama
+groq
 python-dotenv
 pydantic
