@@ -1,6 +1,6 @@
 from sentence_transformers import SentenceTransformer
 from supabase import create_client
-import ollama
+from groq import Groq
 import os 
 from dotenv import load_dotenv
 
@@ -9,6 +9,7 @@ load_dotenv()
 url = os.getenv("SUPABASE_URL")
 key = os.getenv("SUPABASE_KEY")
 client = create_client(url, key)
+groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 embedder = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -63,21 +64,17 @@ def rewrite_query(query):
     Rewritten: "difficult exams, heavy workload, low average GPA, challenging assignments, strict grading, significant time commitment"
     """
 
-    response = ollama.chat(model='llama3', messages=[
-        {'role': 'system', 'content': system_prompt},
-        {'role': 'user', 'content': query}
-    ], options={
-        'num_predict': 100,   # max tokens
-        'temperature': 0.2,   # smaller for more consistent responses
-    })
+    response = groq_client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {'role': 'system', 'content': system_prompt},
+            {'role': 'user', 'content': query}
+        ],
+        max_tokens=100, # max tokens 
+        temperature=0.2, # creativity - 0.2 = more consistent
+    )
 
-    new_query = response['message']['content']
-
-    return new_query
-
-    # print("NEW QUERY STATISTICS ")
-    # print(new_query)
-    # retreive_chunks(query=new_query)
+    return response.choices[0].message.content
 
 def answer_query(query, retrieved_chunks):
     system_prompt = f"""
@@ -93,12 +90,21 @@ def answer_query(query, retrieved_chunks):
         {'role': 'user', 'content': query}
     ]
 
-    for response in ollama.chat(model='llama3', messages=messages, stream=True, options={
-        'num_predict': 250
-    }):
-        token = response['message']['content']
-        yield token
-        # print(token, end='', flush=True)
+    stream = groq_client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {'role': 'system', 'content': system_prompt},
+            {'role': 'user', 'content': query}
+        ],
+        max_tokens=250,
+        temperature=0.7,
+        stream=True,
+    )
+
+    for chunk in stream:
+        token = chunk.choices[0].delta.content
+        if token:
+            yield token
 
 """
 def pipeline(): 
