@@ -1,4 +1,4 @@
-from sentence_transformers import SentenceTransformer
+from fastembed import TextEmbedding
 from supabase import create_client
 from groq import Groq
 import os 
@@ -11,10 +11,10 @@ key = os.getenv("SUPABASE_KEY")
 client = create_client(url, key)
 groq_client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-embedder = SentenceTransformer("all-MiniLM-L6-v2")
+embedder = TextEmbedding("sentence-transformers/all-MiniLM-L6-v2")
 
 def embed_query(text):
-    return embedder.encode(text, normalize_embeddings=True).tolist()
+    return list(embedder.embed([text]))[0].tolist()
 
 def retreive_chunks(query, professor, course, max_chunks=8, threshold=0.3):
     query_vec = embed_query(query)
