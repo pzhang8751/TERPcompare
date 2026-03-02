@@ -1,4 +1,5 @@
 import Logo from '@/assets/crx.svg'
+import Screen from '../components/Screen'
 import { useState } from 'react'
 import './App.css'
 
@@ -10,7 +11,7 @@ function App() {
     <div className="popup-container">
       {show && (
         <div className={`popup-content ${show ? 'opacity-100' : 'opacity-0'}`}>
-          <h1>HELLO CRXJS</h1>
+          <Screen></Screen>
         </div>
       )}
       <button className="toggle-button" onClick={toggle}>
