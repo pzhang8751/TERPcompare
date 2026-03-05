@@ -85,12 +85,12 @@ def answer_query(query, retrieved_chunks):
     Reviews:
     {retrieved_chunks if retrieved_chunks else "No reviews found."}
     """
-    messages = [
-        {'role': 'system', 'content': system_prompt},
-        {'role': 'user', 'content': query}
-    ]
+    # messages = [
+    #     {'role': 'system', 'content': system_prompt},
+    #     {'role': 'user', 'content': query}
+    # ]
 
-    stream = groq_client.chat.completions.create(
+    response = groq_client.chat.completions.create(
         model="llama3-8b-8192",
         messages=[
             {'role': 'system', 'content': system_prompt},
@@ -101,10 +101,7 @@ def answer_query(query, retrieved_chunks):
         stream=True,
     )
 
-    for chunk in stream:
-        token = chunk.choices[0].delta.content
-        if token:
-            yield token
+    return response.choices[0].message.content
 
 """
 def pipeline(): 
