@@ -98,7 +98,7 @@ def answer_query(query, retrieved_chunks):
         ],
         max_tokens=250,
         temperature=0.7,
-        stream=True,
+        stream=False,
     )
 
     return response.choices[0].message.content
