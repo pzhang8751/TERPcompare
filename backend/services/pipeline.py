@@ -65,7 +65,7 @@ def rewrite_query(query):
     """
 
     response = groq_client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': query}
@@ -91,7 +91,7 @@ def answer_query(query, retrieved_chunks):
     # ]
 
     response = groq_client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama-3.1-8b-instant",
         messages=[
             {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': query}
