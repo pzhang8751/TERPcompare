@@ -19,9 +19,5 @@ async def handle_query(req: QueryRequest):
         professor=req.professor,
         course=req.course
     )
-
-    # Streaming response so chat is flushed out as tokens arrive
-    return StreamingResponse(
-        answer_query(req.question, chunks),
-        media_type="text/event-stream"
-    )
+    answer = answer_query(req.question, chunks)
+    return { "answer": answer }
