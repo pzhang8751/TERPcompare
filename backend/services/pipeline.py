@@ -76,19 +76,37 @@ def rewrite_query(query):
 
     return response.choices[0].message.content
 
+def format_chunks(retrieved_chunks):
+    """Convert raw chunk dicts into clean readable text for the prompt."""
+    if not retrieved_chunks:
+        return "No reviews found."
+    
+    formatted = []
+    for i, chunk in enumerate(retrieved_chunks, 1):
+        formatted.append(
+            f"Review {i} (Professor: {chunk['professor_name']}, "
+            f"Course: {chunk['course_name']}):\n{chunk['chunk_text']}"
+        )
+    return "\n\n".join(formatted)
+
 def answer_query(query, retrieved_chunks):
-    system_prompt = f"""
-    You are a helpful assistant that answers student questions about UMD professors and courses.
-    Answer based only on the review data provided. Be concise and direct.
-    If the reviews provided are not relevant to the question or no reviews are provided, respond with "I don't have enough data to answer that question."
+    formatted_reviews = format_chunks(retrieved_chunks)
+    
+    system_prompt = f"""You are a helpful assistant that answers student questions about UMD professors and courses.
+
+    Your job is to synthesize student reviews to answer the question. Reviews often contain indirect signals — 
+    for example, mentions of strict grading, mandatory attendance, or tough exams are signals about difficulty/easiness.
+    Draw reasonable inferences from what students have written, even if they don't use the exact words in the question.
+
+    Guidelines:
+    - Be concise and direct (2-4 sentences)
+    - Cite specific details from reviews (e.g. "multiple students mention...", "one reviewer noted...")
+    - Only say you lack data if the reviews are genuinely about a completely different topic
+    - Do not hedge excessively — students want a clear takeaway
 
     Reviews:
-    {retrieved_chunks if retrieved_chunks else "No reviews found."}
+    {formatted_reviews}
     """
-    # messages = [
-    #     {'role': 'system', 'content': system_prompt},
-    #     {'role': 'user', 'content': query}
-    # ]
 
     response = groq_client.chat.completions.create(
         model="llama-3.1-8b-instant",
@@ -96,8 +114,8 @@ def answer_query(query, retrieved_chunks):
             {'role': 'system', 'content': system_prompt},
             {'role': 'user', 'content': query}
         ],
-        max_tokens=250,
-        temperature=0.7,
+        max_tokens=125,
+        temperature=0.4,  # Lower temp = more consistent, less hallucination
         stream=False,
     )
 
@@ -105,10 +123,18 @@ def answer_query(query, retrieved_chunks):
 
 """
 def pipeline(): 
-    query = "Is this professor easy?"
-    new_query = rewrite_query(query)
-    context = retreive_chunks(new_query)
-    answer_query(query, context)
+    new_query = rewrite_query("Is this professor easy?")
+    chunks = retreive_chunks(
+        query=new_query,
+        professor="Larry Herman",
+        course=None
+    )
+
+    print(chunks)
+    answer = answer_query("Is this professor easy?", chunks)
+
+    print(answer)
+    # return { "answer": answer }
 
 pipeline()
 """
