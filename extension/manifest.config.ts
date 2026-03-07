@@ -18,6 +18,7 @@ export default defineManifest({
     'sidePanel',
     'contentSettings',
     'activeTab',
+    'storage'
   ],
   "host_permissions": [
     "https://terpcompare-production.up.railway.app/*",

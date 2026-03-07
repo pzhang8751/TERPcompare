@@ -1,17 +1,36 @@
 import './Screen.css'
 import AsyncSelect from 'react-select/async'
 import { loadProfessors, loadCourses } from './SelectMenu'
-import { IoArrowUp } from "react-icons/io5";
-import { useState } from 'react';
+import { IoArrowUp } from "react-icons/io5"
+import { useState, useEffect, useRef } from 'react'
+
+function usePersistedState<T>(key: string, defaultValue: T) {
+    const [state, setState] = useState<T>(defaultValue)
+    const [loaded, setLoaded] = useState(false)
+
+    useEffect(() => {
+        chrome.storage.local.get(key, (result) => {
+            setState((result[key] ?? defaultValue) as T)
+            setLoaded(true)
+        });
+    }, [key]);
+
+    useEffect(() => {
+        if (!loaded) return
+        chrome.storage.local.set({ [key]: state })
+    }, [state, loaded])
+
+    return [state, setState] as const
+}
 
 export default function Screen() {
-    const [chat, setChat] = useState<string[]>([])
+    const [chat, setChat] = usePersistedState<string[]>("chat", [])
 
-    const [input, setInput] = useState('')
-    const [prof, setProf] = useState<{ value: string | null; label: string } | null>({ value: null, label: 'Professor' })
-    const [course, setCourse] = useState<{ value: string | null; label: string } | null>({ value: null, label: 'Course' })
+    const [input, setInput] = usePersistedState<string>("input", '')
+    const [prof, setProf] = usePersistedState<{ value: string | null; label: string } | null>("prof", { value: null, label: 'Professor' })
+    const [course, setCourse] = usePersistedState<{ value: string | null; label: string } | null>("course", { value: null, label: 'Course' })
 
-    const [warning, setWarning] = useState('')
+    const [warning, setWarning] = usePersistedState<string>("warning", '')
 
     const handleSend = async () => {
         if (prof?.value === null && course?.value === null) {
@@ -22,12 +41,12 @@ export default function Screen() {
 
             console.log(prof?.value)
             console.log(course?.value)
-             
+
             chrome.runtime.sendMessage(
                 { type: "QUERY", payload: { question: input, professor: prof?.value ?? null, course: course?.value ?? null } },
                 (response) => {
                     if (!response.success) return;
-                        console.log(response)
+                    console.log(response)
 
                     const fullText: string = response.data.answer // adjust to your API's response shape
                     const words = fullText.split(" ")
@@ -51,6 +70,12 @@ export default function Screen() {
         }
     }
 
+    const messagesEndRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
+    }, [chat])
+
     return (
         <>
             <p>Hi! Welcome to Terp Compare</p>
@@ -60,6 +85,7 @@ export default function Screen() {
                 {chat.map((message, index) => (
                     <div key={index} className={index % 2 == 0 ? "chat-prompt" : "chat-answer"}>{message}</div>
                 ))}
+                <div ref={messagesEndRef}></div>
             </div>
             <p className="warning">{warning}</p>
             <div className="prompt-container">
