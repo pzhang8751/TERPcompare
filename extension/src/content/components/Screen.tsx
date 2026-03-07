@@ -8,45 +8,43 @@ export default function Screen() {
     const [chat, setChat] = useState<string[]>([])
 
     const [input, setInput] = useState('')
-    const [prof, setProf] = useState<{ value: string; label: string } | null>({ value: 'null', label: 'Professor' })
-    const [course, setCourse] = useState<{ value: string; label: string } | null>({ value: 'null', label: 'Course' })
+    const [prof, setProf] = useState<{ value: string | null; label: string } | null>({ value: null, label: 'Professor' })
+    const [course, setCourse] = useState<{ value: string | null; label: string } | null>({ value: null, label: 'Course' })
 
     const [warning, setWarning] = useState('')
 
     const handleSend = async () => {
-        if (prof?.value === 'null' && course?.value === 'null') {
+        if (prof?.value === null && course?.value === null) {
             setWarning("*Select at least either a professor course.")
         } else {
             chat.push(input)
             setChat(chat)
 
-            // fetching ai response
-            const response = await fetch("https://terpcompare-production.up.railway.app/api/query", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    question: input.trim(),
-                    professor: prof?.value === 'null' ? null : prof?.value,
-                    course: course?.value === 'null' ? null : course?.value
-                })
-            })
+            console.log(prof?.value)
+            console.log(course?.value)
+             
+            chrome.runtime.sendMessage(
+                { type: "QUERY", payload: { question: input, professor: prof?.value ?? null, course: course?.value ?? null } },
+                (response) => {
+                    if (!response.success) return;
+                        console.log(response)
 
-            const reader = response.body!.getReader()
-            const decoder = new TextDecoder()
+                    const fullText: string = response.data.answer // adjust to your API's response shape
+                    const words = fullText.split(" ")
 
-            // updating chat in stream-like visual response 
-            setChat(prev => [...prev, ""])
-            while (true) {
-                const { done, value } = await reader.read()
-                if (done) break
-                const token = decoder.decode(value)
-
-                setChat(prev => {
-                    const updated = [...prev]
-                    updated[updated.length - 1] += token
-                    return updated
-                })
-            }
+                    // Fake streaming — reveal one word at a time
+                    setChat(prev => [...prev, ""])
+                    words.forEach((word, i) => {
+                        setTimeout(() => {
+                            setChat(prev => {
+                                const updated = [...prev]
+                                updated[updated.length - 1] += (i === 0 ? "" : " ") + word
+                                return updated
+                            })
+                        }, i * 50) // 50ms per word, adjust to taste
+                    })
+                }
+            )
 
             setInput('')
             setWarning('')
@@ -76,7 +74,7 @@ export default function Screen() {
                 ></textarea>
                 <div className="select-container">
                     <AsyncSelect loadOptions={loadProfessors}
-                        defaultOptions={[{ label: 'None', value: 'null' }]}
+                        defaultOptions={[{ label: 'None', value: null }]}
                         unstyled
                         classNamePrefix="select"
                         value={prof}
@@ -111,7 +109,7 @@ export default function Screen() {
                             })
                         }} />
                     <AsyncSelect loadOptions={loadCourses}
-                        defaultOptions={[{ label: 'None', value: 'null' }]}
+                        defaultOptions={[{ label: 'None', value: null }]}
                         unstyled
                         classNamePrefix="select"
                         value={course}

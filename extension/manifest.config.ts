@@ -17,7 +17,16 @@ export default defineManifest({
   permissions: [
     'sidePanel',
     'contentSettings',
+    'activeTab',
   ],
+  "host_permissions": [
+    "https://terpcompare-production.up.railway.app/*",
+    "https://app.testudo.umd.edu/*"
+  ],
+  background: {
+    service_worker: "src/background.ts",
+    type: "module"
+  },
   content_scripts: [{
     js: ['src/content/main.tsx'],
     matches: ['https://*/*'],
