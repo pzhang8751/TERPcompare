@@ -12,3 +12,18 @@ createRoot(container).render(
     <App />
   </StrictMode>,
 )
+
+
+// Restore state on load
+chrome.storage.local.get('sidebarEnabled', ({ sidebarEnabled }) => {
+  if (sidebarEnabled === false) {
+    container.style.display = 'none'
+  }
+})
+
+// Listen for toggle messages from popup
+chrome.runtime.onMessage.addListener((msg) => {
+  if (msg.type === 'TOGGLE_SIDEBAR') {
+    container.style.display = msg.visible ? 'block' : 'none'
+  }
+})

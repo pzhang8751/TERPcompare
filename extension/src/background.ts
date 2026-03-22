@@ -1,7 +1,6 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, _, sendResponse) => {
   if (message.type === "QUERY") {
 
-    // console.log("Background worker payload:", message.payload)
     fetch("https://terpcompare-production.up.railway.app/api/query", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
