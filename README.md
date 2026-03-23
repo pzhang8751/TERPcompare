@@ -1,1 +1,3 @@
 # TERPcompare
+
+Practically every UMD student has heard of PlanetTerp, a site that contains reviews from students for most instructors and classes. It's a very useful tool, but it can be slightly inconvenient when trying to build your schedule for the next semester--having multiple tabs open, crosschecking between different teachers and courses, or even just trying to read through all the abundant reviews. To make this process less of a headache, TERPcompare is an extension that allows students to easily ask questions about an instructor, a class, or both, all without having to leave the UMD schedule of classes page. Users can prompt TERPcompare with whatever they want to know, and receive a summarized response based on review data from PlanetTerp. 
