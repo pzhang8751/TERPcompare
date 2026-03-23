@@ -2,7 +2,9 @@ import './Screen.css'
 import AsyncSelect from 'react-select/async'
 import { loadProfessors, loadCourses } from './SelectMenu'
 import { IoArrowUp } from "react-icons/io5"
+import { TbLoader } from "react-icons/tb";
 import { useState, useEffect, useRef } from 'react'
+import { flushSync } from 'react-dom'
 
 function usePersistedState<T>(key: string, defaultValue: T) {
     const [state, setState] = useState<T>(defaultValue)
@@ -32,15 +34,16 @@ export default function Screen() {
 
     const [warning, setWarning] = usePersistedState<string>("warning", '')
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const handleSend = async () => {
         if (prof?.value === null && course?.value === null) {
             setWarning("*Select at least either a professor course.")
         } else {
-            chat.push(input)
-            setChat(chat)
+            const currentInput = input  // capture before clearing
 
-            console.log(prof?.value)
-            console.log(course?.value)
+            setIsLoading(true)
+            setChat(prev => [...prev, currentInput])  // ← don't mutate directly
 
             chrome.runtime.sendMessage(
                 { type: "QUERY", payload: { question: input, professor: prof?.value ?? null, course: course?.value ?? null } },
@@ -48,7 +51,7 @@ export default function Screen() {
                     if (!response.success) return;
                     console.log(response)
 
-                    const fullText: string = response.data.answer // adjust to your API's response shape
+                    const fullText: string = response.data.answer
                     const words = fullText.split(" ")
 
                     // Fake streaming — reveal one word at a time
@@ -60,7 +63,12 @@ export default function Screen() {
                                 updated[updated.length - 1] += (i === 0 ? "" : " ") + word
                                 return updated
                             })
-                        }, i * 50) // 50ms per word, adjust to taste
+
+                            //setting loading false after stream finishes
+                            if (i === words.length - 1) {
+                                setIsLoading(false)
+                            }
+                        }, i * 200) // 50ms per word, adjust to taste
                     })
                 }
             )
@@ -73,7 +81,7 @@ export default function Screen() {
     const messagesEndRef = useRef<HTMLDivElement>(null)
 
     useEffect(() => {
-        messagesEndRef.current?.scrollIntoView({behavior: 'smooth'})
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
     }, [chat])
 
     return (
@@ -91,7 +99,7 @@ export default function Screen() {
             <div className="prompt-container">
                 <textarea rows={4} placeholder={"Ask..."} value={input} onChange={(e) => { setInput(e.target.value) }}
                     onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
+                        if (input.trim() !== "" && !isLoading && e.key === 'Enter' && !e.shiftKey) {
                             e.preventDefault()
                             handleSend()
                         }
@@ -150,7 +158,13 @@ export default function Screen() {
                                 cursor: 'pointer',
                             })
                         }} />
-                    <button className={input.trim() ? "submit-button active" : "submit-button"} onClick={() => handleSend()}><IoArrowUp /></button>
+                    <button
+                        disabled={isLoading || !input.trim()}
+                        className={`submit-button ${isLoading ? 'loading' : input.trim() ? 'active' : ''}`}
+                        onClick={() => handleSend()}
+                    >
+                        {isLoading ? <TbLoader className="rotate"/> : <IoArrowUp />}
+                    </button>
                 </div>
             </div>
         </>

@@ -104,6 +104,7 @@
 
 .submit-button {
     background-color: #a8bdd9;
+    color: #1a2744;
     border: none;
     outline: none;
     border-radius: 0.5rem;
@@ -112,15 +113,34 @@
     justify-content: center;
     padding: 10px;
     margin-left: auto;
+    cursor: default;
 }
 
 .submit-button.active {
-    background-color: orange;
+    background-color: #f97316;
     cursor: pointer;
 }
 
 .submit-button.active:hover {
-    background-color: #ffb347;
+    background-color: #fb923c;
+}
+
+@keyframes spin {
+    to { transform: rotate(45deg); }
+}
+
+/** not applying for some reason */ 
+.rotate {
+    animation: spin 1s linear infinite;
+}
+
+.submit-button.loading {
+    background-color: #a8bdd9;
+    cursor: default;
+}
+
+.submit-button.loading:hover {
+    background-color: #a8bdd9;
 }
 
 .select-container {
