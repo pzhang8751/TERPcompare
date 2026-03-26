@@ -82,7 +82,7 @@
 }
 
 .select__control {
-    width: 100px;
+    width: 100%;
     color: #1a2744;
     background-color: transparent;
     border: none;
@@ -94,6 +94,7 @@
 }
 
 .select__menu {
+    width: 100%;
     background-color: white;
     color: #1a2744;
     border: none;
@@ -103,6 +104,7 @@
 }
 
 .submit-button {
+    height: min-content;
     background-color: #a8bdd9;
     color: #1a2744;
     border: none;
@@ -114,6 +116,7 @@
     padding: 10px;
     margin-left: auto;
     cursor: default;
+    align-self: end;
 }
 
 .submit-button.active {
@@ -143,7 +146,25 @@
     background-color: #a8bdd9;
 }
 
-.select-container {
+.features-container {
     display: flex;
     gap: 10px;
+}
+
+.select-container {
+    width: 100%;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 10px; 
+    align-items: center;   
+    justify-items: start;
+}
+
+.select-container p {
+    font-weight: 500;
+}
+
+.select-container > *:nth-child(even) {
+    width: 100%;
+    justify-self: stretch;
 }

@@ -4,7 +4,6 @@ import { loadProfessors, loadCourses } from './SelectMenu'
 import { IoArrowUp } from "react-icons/io5"
 import { TbLoader } from "react-icons/tb";
 import { useState, useEffect, useRef } from 'react'
-import { flushSync } from 'react-dom'
 
 function usePersistedState<T>(key: string, defaultValue: T) {
     const [state, setState] = useState<T>(defaultValue)
@@ -106,64 +105,88 @@ export default function Screen() {
                     }}
                     className="prompt-box"
                 ></textarea>
-                <div className="select-container">
-                    <AsyncSelect loadOptions={loadProfessors}
-                        defaultOptions={[{ label: 'None', value: null }]}
-                        unstyled
-                        classNamePrefix="select"
-                        value={prof}
-                        onChange={(option) => setProf(option)}
-                        styles={{
-                            option: base => ({
-                                ...base,
-                                height: '32px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '0 12px',
-                                cursor: 'pointer',
-                            }),
+                <div className="features-container">
+                    <div className="select-container">
+                        <p>Professor:</p>
+                        <AsyncSelect loadOptions={loadProfessors}
+                            defaultOptions={[{ label: 'None', value: null }]}
+                            unstyled
+                            classNamePrefix="select"
+                            value={prof}
+                            onChange={(option) => setProf(option)}
+                            styles={{
+                                option: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                    cursor: 'pointer',
+                                }),
 
-                            noOptionsMessage: base => ({
-                                ...base,
-                                height: '32px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '0 12px',
-                            }),
+                                noOptionsMessage: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                }),
 
-                            loadingMessage: base => ({
-                                ...base,
-                                height: '32px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '0 12px',
-                                fontSize: '1rem',
-                                color: 'inherit',
-                                margin: 0,
-                            })
-                        }} />
-                    <AsyncSelect loadOptions={loadCourses}
-                        defaultOptions={[{ label: 'None', value: null }]}
-                        unstyled
-                        classNamePrefix="select"
-                        value={course}
-                        onChange={(option) => setCourse(option)}
-                        styles={{
-                            option: base => ({
-                                ...base,
-                                height: '32px',
-                                display: 'flex',
-                                alignItems: 'center',
-                                padding: '0 12px',
-                                cursor: 'pointer',
-                            })
-                        }} />
+                                loadingMessage: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                    fontSize: '1rem',
+                                    color: 'inherit',
+                                    margin: 0,
+                                })
+                            }} />
+                        <p>Course:</p>
+                        <AsyncSelect loadOptions={loadCourses}
+                            defaultOptions={[{ label: 'None', value: null }]}
+                            unstyled
+                            classNamePrefix="select"
+                            value={course}
+                            onChange={(option) => setCourse(option)}
+                            styles={{
+                                option: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                    cursor: 'pointer',
+                                }),
+
+                                noOptionsMessage: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                }),
+
+                                loadingMessage: base => ({
+                                    ...base,
+                                    height: '32px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    padding: '0 12px',
+                                    fontSize: '1rem',
+                                    color: 'inherit',
+                                    margin: 0,
+                                })
+                            }} />
+                    </div>
+
                     <button
                         disabled={isLoading || !input.trim()}
                         className={`submit-button ${isLoading ? 'loading' : input.trim() ? 'active' : ''}`}
                         onClick={() => handleSend()}
                     >
-                        {isLoading ? <TbLoader className="rotate"/> : <IoArrowUp />}
+                        {isLoading ? <TbLoader className="rotate" /> : <IoArrowUp />}
                     </button>
                 </div>
             </div>
