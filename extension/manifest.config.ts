@@ -20,7 +20,7 @@ export default defineManifest({
     'activeTab',
     'storage'
   ],
-  "host_permissions": [
+  host_permissions: [
     "https://terpcompare-production.up.railway.app/*",
     "https://app.testudo.umd.edu/*"
   ],
@@ -30,7 +30,7 @@ export default defineManifest({
   },
   content_scripts: [{
     js: ['src/content/main.tsx'],
-    matches: ['https://*/*'],
+    matches: ['https://app.testudo.umd.edu/soc/*'],
   }],
   side_panel: {
     default_path: 'src/sidepanel/index.html',
