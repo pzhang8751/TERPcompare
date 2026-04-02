@@ -4,7 +4,7 @@ import Toggle from './components/Toggle'
 export default function App() {
   return (
     <div className="popup-container">
-      <p>Toggle TerpCOMPARE</p>
+      <p>Toggle TERPCompare</p>
       <Toggle></Toggle>
     </div>
   )

@@ -1,3 +1,6 @@
+.title-container {
+    place-items: center;
+}
 
 .chat-container {
     background-color: transparent; 

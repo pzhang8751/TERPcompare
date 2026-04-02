@@ -85,9 +85,11 @@ export default function Screen() {
 
     return (
         <>
-            <p>Hi! Welcome to Terp Compare</p>
-            <p>Select a teacher, course, or none for both</p>
-            <p>Ask away! </p>
+            <div className="title-container">
+                <p>Hi! Welcome to TERPCompare</p>
+                <p>Select a teacher or course, and ask away!</p>
+            </div>
+            
             <div className="chat-container">
                 {chat.map((message, index) => (
                     <div key={index} className={index % 2 == 0 ? "chat-prompt" : "chat-answer"}>{message}</div>
