@@ -1,10 +1,9 @@
 import { defineManifest } from '@crxjs/vite-plugin'
-import pkg from './package.json'
 
 export default defineManifest({
   manifest_version: 3,
-  name: pkg.name,
-  version: pkg.version,
+  name: "TERPCompare",
+  version: "1.0.0",
   icons: {
     48: 'public/logo.png',
   },
