@@ -1,4 +1,4 @@
-import Logo from '@/assets/crx.svg'
+import Logo from '@/assets/logo.png?inline'
 import Screen from '../components/Screen'
 import { useState } from 'react'
 import './App.css'
@@ -6,6 +6,7 @@ import './App.css'
 function App() {
   const [show, setShow] = useState(false)
   const toggle = () => setShow(!show)
+  console.log(Logo)
 
   return (
     <div className="popup-container">
@@ -15,7 +16,7 @@ function App() {
         </div>
       )}
       <button className="toggle-button" onClick={toggle}>
-        <img src={Logo} alt="CRXJS logo" className="button-icon" />
+        <img src={Logo} alt="TERPCompare logo" className="button-icon" />
       </button>
     </div>
   )
